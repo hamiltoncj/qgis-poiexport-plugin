@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/poiexport" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
