@@ -19,25 +19,19 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
+from PyQt4.QtGui import QIcon, QAction
 
-# Initialize Qt resources from file resources.py
-import resources
-
-import os.path
-from poiExportDialog import POIExportDialog
+import os
+from .poiExportDialog import POIExportDialog
 
 class POIExport:
     def __init__(self, iface):
         self.iface = iface
+        self.poiDialog = None
 
     def initGui(self):
         """Create the menu & tool bar items within QGIS"""
-        self.poiDialog = POIExportDialog(self.iface)
-        icon = QIcon(":/plugins/poiexport/icon.png")
+        icon = QIcon(os.path.dirname(__file__) + "/icon.png")
         self.poiAction = QAction(icon, u"POI Exporter", self.iface.mainWindow())
         self.poiAction.triggered.connect(self.showPOIDialog)
         self.poiAction.setCheckable(False)
@@ -51,6 +45,8 @@ class POIExport:
     
     def showPOIDialog(self):
         """Display the POI Dialog window."""
+        if not self.poiDialog:
+            self.poiDialog = POIExportDialog(self.iface)
         self.poiDialog.show()
         self.poiDialog.raise_()
         self.poiDialog.activateWindow()

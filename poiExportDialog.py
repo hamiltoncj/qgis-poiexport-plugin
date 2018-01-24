@@ -21,13 +21,14 @@
 """
 
 import os
-from PyQt4 import uic, QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4 import uic
+from PyQt4.QtCore import QUrl, QSettings
+from PyQt4.QtGui import QDialog, QDialogButtonBox, QFileDialog
 
-from qgis.core import *
-from qgis.gui import *
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer
+from qgis.gui import QgsMessageBar, QgsMapLayerProxyModel
 from xml.sax.saxutils import escape, unescape
+import webbrowser
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -37,7 +38,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'poiexportdialog.ui'))
 
         
-class POIExportDialog(QtGui.QDialog, FORM_CLASS):
+class POIExportDialog(QDialog, FORM_CLASS):
     def __init__(self, iface):
         """Initialize the QGIS POI (Points of Interest) dialog window."""
         super(POIExportDialog, self).__init__(iface.mainWindow())
@@ -48,15 +49,22 @@ class POIExportDialog(QtGui.QDialog, FORM_CLASS):
         self.outputFormatComboBox.addItems(['GPX', 'Garmin CSV'])
         
         self.fileButton.clicked.connect(self.getDirPath)
-        self.vectorComboBox.activated.connect(self.initLayerFields)
+        self.vectorComboBox.layerChanged.connect(self.initLayerFields)
+        self.vectorComboBox.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.categoryComboBox.activated.connect(self.setEnabled)
         self.poiNameComboBox.activated.connect(self.setEnabled)
         self.epsg4326 = QgsCoordinateReferenceSystem("EPSG:4326")
+        self.buttonBox.button(QDialogButtonBox.Help).clicked.connect(self.help)
+
+    def help(self):
+        url = QUrl.fromLocalFile(os.path.dirname(__file__) + "/index.html").toString()
+        webbrowser.open(url, new=2)
         
         
     def accept(self):
         """Called when the OK button has been pressed."""
         if self.vectorComboBox.count() == 0:
+            self.iface.messageBar().pushMessage("", "No point vector layers are available", level=QgsMessageBar.WARNING, duration=3)
             return
         # Read and get the state of all of the POI widgets
         base = self.fileLineEdit.text()
@@ -221,25 +229,17 @@ class POIExportDialog(QtGui.QDialog, FORM_CLASS):
             fp.close()
 
     def getDirPath(self):
-        folder = askForFolder(self)
+        settings = QSettings()
+        path = settings.value("LastPath/POIExportPath", None)
+        folder =  QFileDialog.getExistingDirectory(self, "Select POI folder", path)
         if not folder:
             return
+        settings.setValue("LastPath/POIExportPath", folder)
         self.fileLineEdit.setText(folder)
 
     def showEvent(self, event):
         """ Initialize the Dialog widgets when it is first displyaed """
         super(POIExportDialog, self).showEvent(event)
-        self.populateLayerListComboBox()
-        
-    def populateLayerListComboBox(self):
-        """ Populate the QComboBox with a list of all the QGIS point vector layers."""
-        layers = self.iface.legendInterface().layers()
-        self.vectorComboBox.clear()
-        
-        for layer in layers:
-            if isinstance(layer, QgsVectorLayer) and layer.geometryType() == QGis.Point:
-                self.vectorComboBox.addItem(layer.name(), layer)
-
         self.initLayerFields()
 
     def initLayerFields(self):
@@ -250,7 +250,7 @@ class POIExportDialog(QtGui.QDialog, FORM_CLASS):
         self.descriptionComboBox.clear()
         if self.vectorComboBox.count() == 0:
             return
-        self.selectedLayer = self.vectorComboBox.itemData(self.vectorComboBox.currentIndex())
+        self.selectedLayer = self.vectorComboBox.currentLayer()
         
         self.categoryComboBox.addItem(u'[Use Default Category]', -1)
         self.poiNameComboBox.addItem(u'[Use Default POI Name]', -1)
@@ -268,22 +268,3 @@ class POIExportDialog(QtGui.QDialog, FORM_CLASS):
         poiNameCol = self.poiNameComboBox.currentIndex()
         self.defaultCategoryLineEdit.setEnabled(categoryCol == 0)
         self.defaultPOILineEdit.setEnabled(poiNameCol == 0)
-
-    
-LAST_PATH = "LastPath"
-def askForFolder(parent, name="POIExportPath"):
-    path = getSetting(LAST_PATH, name)
-    folder =  QFileDialog.getExistingDirectory(parent, "Select POI folder", path)
-    if folder:
-        setSetting(LAST_PATH, name, folder)
-    return folder
-
-def setSetting(namespace, name, value):
-    settings = QSettings()
-    settings.setValue(namespace + "/" + name, value)
-
-def getSetting(namespace, name):
-    v = QSettings().value(namespace + "/" + name, None)
-    if isinstance(v, QPyNullVariant):
-        v = None
-    return v

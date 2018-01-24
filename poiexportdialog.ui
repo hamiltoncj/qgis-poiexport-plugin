@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>358</width>
-    <height>410</height>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="vectorComboBox"/>
+    <widget class="QgsMapLayerComboBox" name="vectorComboBox"/>
    </item>
    <item>
     <widget class="QLabel" name="label_3">
@@ -164,12 +164,19 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsMapLayerComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgis.gui</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

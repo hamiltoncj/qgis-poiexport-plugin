@@ -11,34 +11,30 @@ This is the dialog box that will be seen when ***POI Exporter*** is launched.
 
 In this example we are using the [Natural Earth Parks and Protected Lands Data](http://www.naturalearthdata.com/downloads/10m-cultural-vectors/parks-and-protected-lands/) data set. The following show the different parameters used by this example.
 
-* __Select Output POI Folder__ - This is the folder that the POI files are saved in and is also what the [Garmin POI Loader](http://www.garmin.com/us/maps/poiloader) uses to load the POIs onto their devices.
+* **Select Output POI Folder** - This is the folder that the POI files are saved in and is also what the [Garmin POI Loader](http://www.garmin.com/us/maps/poiloader) uses to load the POIs onto their devices.
+* **Output Format** - Currently ***GPX*** and ***Garmin CSV*** formats are supported.
+    * **GPX** - This is a universal format that should work with a number of devices. You can also use this format to import points into [Garmin BaseCamp](http://www.garmin.com/en-US/shop/downloads/basecamp).
+    * **Garmin CSV** - This creates a POI CSV file where each line is formatted as:
 
-* __Output Format__ - Currently ***GPX*** and ***Garmin CSV*** formats are supported.
- * __GPX__ - This is a universal format that should work with a number of devices. You can also use this format to import points into [Garmin BaseCamp](http://www.garmin.com/en-US/shop/downloads/basecamp).
- 
- * __Garmin CSV__ - This creates a POI CSV file where each line is formatted as:
-
-   __`Longitude,Latitude,"Name"[,"Description"]`__
+            Longitude,Latitude,"Name"[,"Description"]
   
-   __Name__ and __Description__ use quoted text strings where each string has double quotes at the beginning and end, and internal double quotes are duplicated. By quoting the strings, commas, new lines, and carriage returns can be used. This shows an example from the Natural Earth data set.
+        **Name** and **Description** use quoted text strings where each string has double quotes at the beginning and end, and internal double quotes are duplicated. By quoting the strings, commas, new lines, and carriage returns can be used. This shows an example from the Natural Earth data set.
    
-   ```
-   -74.1793513663,40.9151065125,"Paterson Great Falls NHP","National Historical Park"
-   -74.2397354809,40.7858747417,"Thomas Edison NHP","National Historical Park"
-   -75.4446508454,40.0989444031,"Valley Forge NHP","National Historical Park"`
-   ```
+            -74.1793513663,40.9151065125,"Paterson Great Falls NHP","National Historical Park"  
+            -74.2397354809,40.7858747417,"Thomas Edison NHP","National Historical Park"  
+            -75.4446508454,40.0989444031,"Valley Forge NHP","National Historical Park"
 
-* __Input Vector Layer__ - All the point vector layers in the QGIS project will be listed here.
+* **Input Vector Layer** - All the point vector layers in the QGIS project will be listed here.
 
-* __Select Category Column (Optional)__ - Category names become the POI file names. When a column is used as the category name, the POIs are organized into multiple files based on the names specified in this column. If **[Use Default Category]** is used, then the file name will become the string from **Default Category Name**.
+* **Select Category Column (Optional)** - Category names become the POI file names. When a column is used as the category name, the POIs are organized into multiple files based on the names specified in this column. If **[Use Default Category]** is used, then the file name will become the string from **Default Category Name**.
 
-* __Default Category Name (This will become the file name)__ - When **Select Category Column** is set to **[Use Default Category]**, then the file name will become the string from this text field.
+* **Default Category Name (This will become the file name)** - When **Select Category Column** is set to **[Use Default Category]**, then the file name will become the string from this text field.
 
-* __Select Column to be use as the POI Name__ - If there is a column that represents the name of the POI, then select it here; otherwise, every POI will get the **Default POI Name**. This will be the **Title** or **Name** that is displayed next to the POI marker on the map.
+* **Select Column to be use as the POI Name** - If there is a column that represents the name of the POI, then select it here; otherwise, every POI will get the **Default POI Name**. This will be the **Title** or **Name** that is displayed next to the POI marker on the map.
 
-* __Default POI Name__ - This specifies a default POI name if a POI Name column is not specified.
+* **Default POI Name** - This specifies a default POI name if a POI Name column is not specified.
 
-* __Optional Description Column__ - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
+* **Optional Description Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
 
 By clicking on the ***Export*** button, one or more **GPX** or **CSV** files will be created. This shows the GPX files created with using the Parks Natural Earth data set and specifying ***nps_region*** as the category column. 
 
