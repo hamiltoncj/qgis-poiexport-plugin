@@ -1,14 +1,15 @@
 PLUGINNAME = poiexport
+PLUGINS = $(HOME)/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/$(PLUGINNAME)
 PY_FILES = poiexport.py __init__.py poiExportDialog.py
 EXTRAS = icon.png metadata.txt
 UI_FILES = poiexportdialog.ui
 
 deploy: 
-	mkdir -p $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vfr doc $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)
-	cp -vf helphead.html $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/index.html
-	python -m markdown -x markdown.extensions.headerid README.md >> $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/index.html
-	echo '</body>' >> $(HOME)/.qgis2/python/plugins/$(PLUGINNAME)/index.html
+	mkdir -p $(PLUGINS)
+	cp -vf $(PY_FILES) $(PLUGINS)
+	cp -vf $(UI_FILES) $(PLUGINS)
+	cp -vf $(EXTRAS) $(PLUGINS)
+	cp -vfr doc $(PLUGINS)
+	cp -vf helphead.html $(PLUGINS)/index.html
+	python -m markdown -x markdown.extensions.headerid README.md >> $(PLUGINS)/index.html
+	echo '</body>' >> $(PLUGINS)/index.html

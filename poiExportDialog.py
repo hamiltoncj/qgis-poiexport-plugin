@@ -21,17 +21,14 @@
 """
 
 import os
-from PyQt4 import uic
-from PyQt4.QtCore import QUrl, QSettings
-from PyQt4.QtGui import QDialog, QDialogButtonBox, QFileDialog
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import QSettings, QUrl
+from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QDialogButtonBox
 
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer
-from qgis.gui import QgsMessageBar, QgsMapLayerProxyModel
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer, QgsMapLayerProxyModel, QgsProject
+from qgis.gui import QgsMessageBar
 from xml.sax.saxutils import escape, unescape
 import webbrowser
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -78,7 +75,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
         
         # Set up a coordinate transform to make sure the output is always epsg:4326 
         layerCRS = self.selectedLayer.crs()
-        self.transform4326 = QgsCoordinateTransform(layerCRS, self.epsg4326)
+        self.transform4326 = QgsCoordinateTransform(layerCRS, self.epsg4326, QgsProject.instance())
         
         
         if outputFormat == 0: # GPX output formt
@@ -88,7 +85,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
             else:
                 # The user has selected a column to be used as POI categories. This will create
                 # multiple files with the names coming from this category. Output is GPX
-                categoryName = unicode(self.categoryComboBox.currentText())
+                categoryName = str(self.categoryComboBox.currentText())
                 self.processCatGPX(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol)
         else: # CSV output formt
             if categoryCol == 0:
@@ -97,7 +94,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
             else:
                 # The user has selected a column to be used as POI categories. This will create
                 # multiple files with the names coming from this category. Output is CSV
-                categoryName = unicode(self.categoryComboBox.currentText())
+                categoryName = str(self.categoryComboBox.currentText())
                 self.processCat(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol)
         QDialog.accept(self)
         
@@ -106,23 +103,23 @@ class POIExportDialog(QDialog, FORM_CLASS):
             quotes the text."""
         filename = "{}.csv".format(cat)
         path = os.path.join(base, filename)
-        defaultPOI = unicode(defaultPOI).replace(u'"', u'""')
-        fp = open(path, "w")
+        defaultPOI = str(defaultPOI).replace('"', '""')
+        fp = open(path, "w", encoding="utf-8")
         for f in layer.getFeatures(  ):
             point = self.transform4326.transform(f.geometry().asPoint())
             if poiNameCol == 0:
                 # Format: longitude, latitude, default name
-                line = u'{},{},"{}"'.format(point.x(), point.y(),defaultPOI)
+                line = '{},{},"{}"'.format(point.x(), point.y(),defaultPOI)
             else:
                 # Format: longitude, latitude, name from the specified column
-                line = u'{},{},"{}"'.format(point.x(), point.y(),unicode(f[poiNameCol-1]).replace(u'"',u'""'))
+                line = '{},{},"{}"'.format(point.x(), point.y(),str(f[poiNameCol-1]).replace('"','""'))
             fp.write(line)
             if descCol > 0:
                 # Add: , description to the line
                 if f[descCol-1]:
-                    line = u',"{}"'.format(unicode(f[descCol-1]).replace(u'"',u'""'))
+                    line = ',"{}"'.format(str(f[descCol-1]).replace('"','""'))
                 else:
-                    line = u',""'
+                    line = ',""'
                 fp.write(line)
             fp.write('\n')
         fp.close()
@@ -131,29 +128,29 @@ class POIExportDialog(QDialog, FORM_CLASS):
         """ Output the POIs into multiple CSV files based on the unique categories specified by 
             categoryCol."""
         categories = layer.uniqueValues(categoryCol-1)
-        defaultPOI = unicode(defaultPOI).replace(u'"', u'""')
+        defaultPOI = str(defaultPOI).replace('"', '""')
         for cat in categories:
             if cat is None or str(cat) is 'NULL':
                 continue
-            cat = unicode(cat)
-            filename = u"{}.csv".format(cat)
+            cat = str(cat)
+            filename = "{}.csv".format(cat)
             path = os.path.join(base, filename)
-            fp = open(path, "w")
-            filter = u'"{}" = \'{}\''.format(categoryName, cat)
+            fp = open(path, "w", encoding="utf-8")
+            filter = '"{}" = \'{}\''.format(categoryName, cat)
             request = QgsFeatureRequest().setFilterExpression( filter )
             for f in layer.getFeatures( request ):
                 point = self.transform4326.transform(f.geometry().asPoint())
                 if poiNameCol == 0:
                     # Format: longitude, latitude, default name
-                    line = u'{},{},"{}"'.format(point.x(), point.y(),defaultPOI)
+                    line = '{},{},"{}"'.format(point.x(), point.y(),defaultPOI)
                 else:
-                    line = u'{},{},"{}"'.format(point.x(), point.y(),unicode(f[poiNameCol-1]).replace(u'"',u'""'))
+                    line = '{},{},"{}"'.format(point.x(), point.y(),str(f[poiNameCol-1]).replace('"','""'))
                 fp.write(line)
                 if descCol > 0:
                     if f[descCol-1]:
-                        line = u',"{}"'.format(unicode(f[descCol-1]).replace(u'"',u'""'))
+                        line = ',"{}"'.format(str(f[descCol-1]).replace('"','""'))
                     else:
-                        line = u',""'
+                        line = ',""'
                     fp.write(line)
                 fp.write('\n')
             fp.close()
@@ -164,29 +161,29 @@ class POIExportDialog(QDialog, FORM_CLASS):
         filename = "{}.gpx".format(cat)
         path = os.path.join(base, filename)
         # Make sure the defaultPOI string is XML friendly
-        defaultPOI = escape( unescape( unicode(defaultPOI), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+        defaultPOI = escape( unescape( str(defaultPOI), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
 
-        fp = open(path, "w")
+        fp = open(path, "w", encoding="utf-8")
         fp.write('<?xml version="1.0" encoding="utf-8"?><gpx version="1.1" creator="QGIS POI Export" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n')
 
         for f in layer.getFeatures(  ):
             point = self.transform4326.transform(f.geometry().asPoint())
-            line = u'<wpt lat="{}" lon="{}">\n'.format(point.y(), point.x())
+            line = '<wpt lat="{}" lon="{}">\n'.format(point.y(), point.x())
             fp.write(line)
             if poiNameCol == 0:
-                line = u'<name>{}</name>\n'.format(defaultPOI)
+                line = '<name>{}</name>\n'.format(defaultPOI)
             else:
                 # Make sure the name string is XML friendly
-                name = escape( unescape( unicode(f[poiNameCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
-                line = u'<name>{}</name>\n'.format(name)
+                name = escape( unescape( str(f[poiNameCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                line = '<name>{}</name>\n'.format(name)
             fp.write(line)
             if descCol > 0:
                 if f[descCol-1]:
                     # Make sure the description string is XML friendly
-                    desc = escape( unescape( unicode(f[descCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
-                    line = u'<cmt>{}</cmt>\n'.format(desc)
+                    desc = escape( unescape( str(f[descCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                    line = '<cmt>{}</cmt>\n'.format(desc)
                     fp.write(line)
-                    line = u'<desc>{}</desc>\n'.format(desc)
+                    line = '<desc>{}</desc>\n'.format(desc)
                     fp.write(line)
             fp.write('</wpt>\n')
         fp.write('</gpx>\n')
@@ -196,33 +193,33 @@ class POIExportDialog(QDialog, FORM_CLASS):
         """ Output the POIs into multiple GPX files based on the unique categories specified by 
             categoryCol."""
         categories = layer.uniqueValues(categoryCol-1)
-        defaultPOI = escape( unescape( unicode(defaultPOI), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+        defaultPOI = escape( unescape( str(defaultPOI), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
         for cat in categories:
             if cat is None or str(cat) is 'NULL':
                 continue
-            cat = unicode(cat)
-            filename = u"{}.gpx".format(cat)
+            cat = str(cat)
+            filename = "{}.gpx".format(cat)
             path = os.path.join(base, filename)
-            fp = open(path, "w")
+            fp = open(path, "w", encoding="utf-8")
             fp.write('<?xml version="1.0" encoding="utf-8"?><gpx version="1.1" creator="QGIS POI Export" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n')
-            filter = u'"{}" = \'{}\''.format(categoryName, cat)
+            filter = '"{}" = \'{}\''.format(categoryName, cat)
             request = QgsFeatureRequest().setFilterExpression( filter )
             for f in layer.getFeatures( request ):
                 point = self.transform4326.transform(f.geometry().asPoint())
-                line = u'<wpt lat="{}" lon="{}">\n'.format(point.y(), point.x())
+                line = '<wpt lat="{}" lon="{}">\n'.format(point.y(), point.x())
                 fp.write(line)
                 if poiNameCol == 0:
-                    line = u'<name>{}</name>\n'.format(defaultPOI)
+                    line = '<name>{}</name>\n'.format(defaultPOI)
                 else:
-                    name = escape( unescape( unicode(f[poiNameCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
-                    line = u'<name>{}</name>\n'.format(name)
+                    name = escape( unescape( str(f[poiNameCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                    line = '<name>{}</name>\n'.format(name)
                 fp.write(line)
                 if descCol > 0:
                     if f[descCol-1]:
-                        desc = escape( unescape( unicode(f[descCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
-                        line = u'<cmt>{}</cmt>\n'.format(desc)
+                        desc = escape( unescape( str(f[descCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                        line = '<cmt>{}</cmt>\n'.format(desc)
                         fp.write(line)
-                        line = u'<desc>{}</desc>\n'.format(desc)
+                        line = '<desc>{}</desc>\n'.format(desc)
                         fp.write(line)
                 fp.write('</wpt>\n')
             fp.write('</gpx>\n')
@@ -252,9 +249,9 @@ class POIExportDialog(QDialog, FORM_CLASS):
             return
         self.selectedLayer = self.vectorComboBox.currentLayer()
         
-        self.categoryComboBox.addItem(u'[Use Default Category]', -1)
-        self.poiNameComboBox.addItem(u'[Use Default POI Name]', -1)
-        self.descriptionComboBox.addItem(u'[Select an Optional POI Description]', -1)
+        self.categoryComboBox.addItem('[Use Default Category]', -1)
+        self.poiNameComboBox.addItem('[Use Default POI Name]', -1)
+        self.descriptionComboBox.addItem('[Select an Optional POI Description]', -1)
         for idx, field in enumerate(self.selectedLayer.fields()):
             self.categoryComboBox.addItem(field.name(), idx)
             self.poiNameComboBox.addItem(field.name(), idx)

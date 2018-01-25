@@ -19,7 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 """
-from PyQt4.QtGui import QIcon, QAction
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
 
 import os
 from .poiExportDialog import POIExportDialog
@@ -32,15 +33,15 @@ class POIExport:
     def initGui(self):
         """Create the menu & tool bar items within QGIS"""
         icon = QIcon(os.path.dirname(__file__) + "/icon.png")
-        self.poiAction = QAction(icon, u"POI Exporter", self.iface.mainWindow())
+        self.poiAction = QAction(icon, "POI Exporter", self.iface.mainWindow())
         self.poiAction.triggered.connect(self.showPOIDialog)
         self.poiAction.setCheckable(False)
         self.iface.addToolBarIcon(self.poiAction)
-        self.iface.addPluginToVectorMenu(u"GPS", self.poiAction)
+        self.iface.addPluginToVectorMenu("GPS", self.poiAction)
 
     def unload(self):
         """Remove the plugin menu item and icon from QGIS GUI."""
-        self.iface.removePluginVectorMenu(u"GPS", self.poiAction)
+        self.iface.removePluginVectorMenu("GPS", self.poiAction)
         self.iface.removeToolBarIcon(self.poiAction)
     
     def showPOIDialog(self):
