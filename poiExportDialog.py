@@ -25,8 +25,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QSettings, QUrl
 from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QDialogButtonBox
 
-from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer, QgsMapLayerProxyModel, QgsProject
-from qgis.gui import QgsMessageBar
+from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer, QgsMapLayerProxyModel, QgsProject
 from xml.sax.saxutils import escape, unescape
 import webbrowser
 
@@ -61,7 +60,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
     def accept(self):
         """Called when the OK button has been pressed."""
         if self.vectorComboBox.count() == 0:
-            self.iface.messageBar().pushMessage("", "No point vector layers are available", level=QgsMessageBar.WARNING, duration=3)
+            self.iface.messageBar().pushMessage("", "No point vector layers are available", level=Qgis.Warning, duration=3)
             return
         # Read and get the state of all of the POI widgets
         base = self.fileLineEdit.text()
