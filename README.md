@@ -2,7 +2,7 @@
 
 The ***POI Exporter*** plugin was designed to create points of interest used by **Garmin GPS** devices, but may work for other devices as well. Please let me know if it works for your brand. If there is a slight change that is needed to support your GPS device, let me know and I may be able to implement it. The only reason it has not been tested on other devices is because I only have Garmin devices. 
 
-If you download the plugin from github, rename the folder to poiexport and put it in the QGIS plugins directory. When you launch QGIS and enable the plugin, it will be displayed in QGIS under the menu ***Vector->GIS->POI Exporter***. It can also be launch from the toolbar by clicking on this icon ![](icon.png).
+The ***POI Exporter*** plugin installs itself in the QGIS menu ***Vector->GIS->POI Exporter***. It can also be launch from the toolbar by clicking on this icon ![](icon.png).
 
 ## POI Exporter Dialog
 This is the dialog box that will be seen when ***POI Exporter*** is launched.
@@ -35,6 +35,8 @@ In this example we are using the [Natural Earth Parks and Protected Lands Data](
 * **Default POI Name** - This specifies a default POI name if a POI Name column is not specified.
 
 * **Optional Description Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
+
+* **Optional Comment Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
 
 By clicking on the ***Export*** button, one or more **GPX** or **CSV** files will be created. This shows the GPX files created with using the Parks Natural Earth data set and specifying ***nps_region*** as the category column. 
 
