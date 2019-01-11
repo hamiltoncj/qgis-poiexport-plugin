@@ -146,6 +146,16 @@
     <widget class="QComboBox" name="descriptionComboBox"/>
    </item>
    <item>
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Optional Comment Column</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="commentComboBox"/>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
