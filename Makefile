@@ -1,6 +1,6 @@
 PLUGINNAME = poiexport
 PLUGINS = "$(HOME)"/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/$(PLUGINNAME)
-PY_FILES = poiexport.py __init__.py poiExportDialog.py
+PY_FILES = poiexport.py __init__.py poiExportDialog.py colorhash.py
 EXTRAS = icon.png metadata.txt
 UI_FILES = poiexportdialog.ui
 

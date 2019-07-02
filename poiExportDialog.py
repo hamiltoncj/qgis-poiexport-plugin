@@ -27,6 +27,7 @@ from qgis.PyQt.QtWidgets import QDialog, QFileDialog, QDialogButtonBox
 
 from qgis.core import Qgis, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsFeatureRequest, QgsVectorLayer, QgsMapLayerProxyModel, QgsProject
 from xml.sax.saxutils import escape, unescape
+from .colorhash import ColorHash
 import webbrowser
 
 
@@ -48,6 +49,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
         self.vectorComboBox.layerChanged.connect(self.initLayerFields)
         self.vectorComboBox.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.categoryComboBox.activated.connect(self.setEnabled)
+        self.visualComboBox.activated.connect(self.setEnabled)
         self.poiNameComboBox.activated.connect(self.setEnabled)
         self.epsg4326 = QgsCoordinateReferenceSystem("EPSG:4326")
         self.buttonBox.button(QDialogButtonBox.Help).clicked.connect(self.help)
@@ -66,6 +68,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
         base = self.fileLineEdit.text()
         categoryCol = self.categoryComboBox.currentIndex()
         poiNameCol = self.poiNameComboBox.currentIndex()
+        visualCol = self.visualComboBox.currentIndex()
         descriptionCol = self.descriptionComboBox.currentIndex()
         commentCol = self.commentComboBox.currentIndex()
         defaultCategory = self.defaultCategoryLineEdit.text()
@@ -81,24 +84,24 @@ class POIExportDialog(QDialog, FORM_CLASS):
         if outputFormat == 0: # GPX output formt
             if categoryCol == 0:
                 # Process the input data to one output category as GPX format
-                self.processSingleCatGPX(self.selectedLayer, base, defaultCategory, poiNameCol, defaultPOI, descriptionCol, commentCol)
+                self.processSingleCatGPX(self.selectedLayer, base, defaultCategory, poiNameCol, defaultPOI, descriptionCol, commentCol, visualCol)
             else:
                 # The user has selected a column to be used as POI categories. This will create
                 # multiple files with the names coming from this category. Output is GPX
                 categoryName = str(self.categoryComboBox.currentText())
-                self.processCatGPX(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol, commentCol)
+                self.processCatGPX(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol, commentCol, visualCol)
         else: # CSV output formt
             if categoryCol == 0:
                 # Process the input data to one output category as CSV format
-                self.processSingleCat(self.selectedLayer, base, defaultCategory, poiNameCol, defaultPOI, descriptionCol, commentCol)
+                self.processSingleCat(self.selectedLayer, base, defaultCategory, poiNameCol, defaultPOI, descriptionCol, commentCol, visualCol)
             else:
                 # The user has selected a column to be used as POI categories. This will create
                 # multiple files with the names coming from this category. Output is CSV
                 categoryName = str(self.categoryComboBox.currentText())
-                self.processCat(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol, commentCol)
+                self.processCat(self.selectedLayer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descriptionCol, commentCol, visualCol)
         QDialog.accept(self)
         
-    def processSingleCat(self, layer, base, cat, poiNameCol, defaultPOI, descCol, cmtCol):
+    def processSingleCat(self, layer, base, cat, poiNameCol, defaultPOI, descCol, cmtCol, visualCol):
         """ Output the POIs into a CSV file with only one category. Note that it
             quotes the text."""
         filename = "{}.csv".format(cat)
@@ -128,10 +131,17 @@ class POIExportDialog(QDialog, FORM_CLASS):
                 else:
                     line = ',""'
                 fp.write(line)
+            if visualCol > 0:
+                # Add: , comment to the line
+                if f[visualCol-1]:
+                    line = ',"{}"'.format(str(f[visualCol-1]).replace('"','""'))
+                else:
+                    line = ',""'
+                fp.write(line)
             fp.write('\n')  
         fp.close()
             
-    def processCat(self, layer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descCol, cmtCol):
+    def processCat(self, layer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descCol, cmtCol, visualCol):
         """ Output the POIs into multiple CSV files based on the unique categories specified by 
             categoryCol."""
         categories = layer.uniqueValues(categoryCol-1)
@@ -165,10 +175,16 @@ class POIExportDialog(QDialog, FORM_CLASS):
                     else:
                         line = ',""'
                     fp.write(line)
+                if visualCol > 0:
+                    if f[visualCol-1]:
+                        line = ',"{}"'.format(str(f[visualCol-1]).replace('"','""'))
+                    else:
+                        line = ',""'
+                    fp.write(line)              
                 fp.write('\n')
             fp.close()
         
-    def processSingleCatGPX(self, layer, base, cat, poiNameCol, defaultPOI, descCol, cmtCol):
+    def processSingleCatGPX(self, layer, base, cat, poiNameCol, defaultPOI, descCol, cmtCol, visualCol):
         """ Output the POIs into a GPX file with only one category. Note that it
             quotes the text."""
         filename = "{}.gpx".format(cat)
@@ -202,11 +218,18 @@ class POIExportDialog(QDialog, FORM_CLASS):
                     cmt = escape( unescape( str(f[cmtCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
                     line = '<cmt>{}</cmt>\n'.format(cmt)
                     fp.write(line)
+            if visualCol > 0:
+                if f[visualCol-1]:
+                    # Make sure the comment string is XML friendly
+                    color = escape( unescape( str(f[visualCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                    colorAgence = ColorHash(color)
+                    line = '<extensions><color>{}</color></extensions>\n'.format(colorAgence.hex)
+                    fp.write(line)
             fp.write('</wpt>\n')
         fp.write('</gpx>\n')
         fp.close()
             
-    def processCatGPX(self, layer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descCol, cmtCol):
+    def processCatGPX(self, layer, base, categoryCol, categoryName, poiNameCol, defaultPOI, descCol, cmtCol, visualCol):
         """ Output the POIs into multiple GPX files based on the unique categories specified by 
             categoryCol."""
         categories = layer.uniqueValues(categoryCol-1)
@@ -241,6 +264,12 @@ class POIExportDialog(QDialog, FORM_CLASS):
                         cmt = escape( unescape( str(f[cmtCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
                         line = '<cmt>{}</cmt>\n'.format(cmt)
                         fp.write(line)
+                if visualCol > 0:
+                    if f[visualCol-1]:
+                        color = escape( unescape( str(f[visualCol-1]), {"&apos;": "'", "&quot;": '"'}), {"'":"&apos;",'"':"&quot;"})
+                        colorAgence = ColorHash(color)
+                        line = '<extensions><color>{}</color></extensions>\n'.format(colorAgence.hex)
+                        fp.write(line)
                 fp.write('</wpt>\n')
             fp.write('</gpx>\n')
             fp.close()
@@ -264,6 +293,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
             points vector layer"""
         self.categoryComboBox.clear()
         self.poiNameComboBox.clear()
+        self.visualComboBox.clear()
         self.descriptionComboBox.clear()
         self.commentComboBox.clear()
         if self.vectorComboBox.count() == 0:
@@ -272,15 +302,17 @@ class POIExportDialog(QDialog, FORM_CLASS):
         
         self.categoryComboBox.addItem('[Use Default Category]', -1)
         self.poiNameComboBox.addItem('[Use Default POI Name]', -1)
+        self.visualComboBox.addItem('[Select an Optional POI color field]', -1)
         self.descriptionComboBox.addItem('[Select an Optional POI Description]', -1)
         self.commentComboBox.addItem('[Select an Optional POI Comment, Address]', -1)
 
         for idx, field in enumerate(self.selectedLayer.fields()):
             self.categoryComboBox.addItem(field.name(), idx)
             self.poiNameComboBox.addItem(field.name(), idx)
+            self.visualComboBox.addItem(field.name(), idx)
             self.descriptionComboBox.addItem(field.name(), idx)
             self.commentComboBox.addItem(field.name(), idx)
-        
+
         self.setEnabled()
         
     def setEnabled(self):

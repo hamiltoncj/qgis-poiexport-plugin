@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>358</width>
-    <height>460</height>
+    <height>508</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,6 +136,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Optional data visualization column</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="visualComboBox"/>
+   </item>
+   <item>
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>Optional Description Column</string>
@@ -184,7 +194,7 @@
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
-   <header>qgis.gui</header>
+   <header>qgsmaplayercombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
