@@ -138,7 +138,7 @@
    <item>
     <widget class="QLabel" name="label_9">
      <property name="text">
-      <string>Optional data visualization column</string>
+      <string>Optional random color hash visualization column</string>
      </property>
     </widget>
    </item>

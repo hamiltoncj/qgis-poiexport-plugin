@@ -302,7 +302,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
         
         self.categoryComboBox.addItem('[Use Default Category]', -1)
         self.poiNameComboBox.addItem('[Use Default POI Name]', -1)
-        self.visualComboBox.addItem('[Select an Optional POI color field]', -1)
+        self.visualComboBox.addItem('[Select an Optional POI color category field]', -1)
         self.descriptionComboBox.addItem('[Select an Optional POI Description]', -1)
         self.commentComboBox.addItem('[Select an Optional POI Comment, Address]', -1)
 

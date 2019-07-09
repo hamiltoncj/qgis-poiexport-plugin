@@ -34,6 +34,8 @@ In this example we are using the [Natural Earth Parks and Protected Lands Data](
 
 * **Default POI Name** - This specifies a default POI name if a POI Name column is not specified.
 
+* **Optional random  color hash visualization column** - This specifies a column that has unique values in which a random color hash will be created for each unique value in the column. Not all devices support the color field, but for those that do this will color the marker into unique color categories.
+
 * **Optional Description Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
 
 * **Optional Comment Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
