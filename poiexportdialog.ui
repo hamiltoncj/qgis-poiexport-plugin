@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>358</width>
-    <height>508</height>
+    <width>354</width>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Select Output POI Folder</string>
+      <string>Select output POI folder</string>
      </property>
     </widget>
    </item>
@@ -68,7 +68,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Output Format </string>
+        <string>Output format </string>
        </property>
       </widget>
      </item>
@@ -80,7 +80,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Input Vector Layer</string>
+      <string>Input vector layer</string>
      </property>
     </widget>
    </item>
@@ -90,7 +90,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Select Category Column (Optional)</string>
+      <string>Select category column (optional)</string>
      </property>
     </widget>
    </item>
@@ -100,7 +100,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Default Category Name (This will become the file name)</string>
+      <string>Default category name (This will become the file name)</string>
      </property>
     </widget>
    </item>
@@ -114,7 +114,7 @@
    <item>
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Select Column to be used as the POI Name</string>
+      <string>Select column to be used as the POI name</string>
      </property>
     </widget>
    </item>
@@ -124,7 +124,7 @@
    <item>
     <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>Default POI Name</string>
+      <string>Default POI name</string>
      </property>
     </widget>
    </item>
@@ -146,9 +146,19 @@
     <widget class="QComboBox" name="visualComboBox"/>
    </item>
    <item>
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Optional comment column</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="commentComboBox"/>
+   </item>
+   <item>
     <widget class="QLabel" name="label_7">
      <property name="text">
-      <string>Optional Description Column</string>
+      <string>Optional description column</string>
      </property>
     </widget>
    </item>
@@ -156,14 +166,24 @@
     <widget class="QComboBox" name="descriptionComboBox"/>
    </item>
    <item>
-    <widget class="QLabel" name="label_8">
+    <widget class="QLabel" name="label_11">
      <property name="text">
-      <string>Optional Comment Column</string>
+      <string>Optional URL column</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="commentComboBox"/>
+    <widget class="QComboBox" name="webLinkComboBox"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Optional symbol column</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="symbolComboBox"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
