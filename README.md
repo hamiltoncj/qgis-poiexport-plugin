@@ -2,7 +2,7 @@
 
 The ***POI Exporter*** plugin was designed to create points of interest used by **Garmin GPS** devices, but may work for other devices as well. Please let me know if it works for your brand. If there is a slight change that is needed to support your GPS device, let me know and I may be able to implement it. The only reason it has not been tested on other devices is because I only have Garmin devices. 
 
-The ***POI Exporter*** plugin installs itself in the QGIS menu ***Vector->GIS->POI Exporter***. It can also be launch from the toolbar by clicking on this icon ![](icon.png).
+The ***POI Exporter*** plugin installs itself in the QGIS menu ***Vector->GIS->POI Exporter***. It can also be launch from the toolbar by clicking on this icon <img src="icon.png" width="24" height="24">.
 
 ## POI Exporter Dialog
 This is the dialog box that will be seen when ***POI Exporter*** is launched.
@@ -11,8 +11,8 @@ This is the dialog box that will be seen when ***POI Exporter*** is launched.
 
 In this example we are using the [Natural Earth Parks and Protected Lands Data](http://www.naturalearthdata.com/downloads/10m-cultural-vectors/parks-and-protected-lands/) data set. The following show the different parameters used by this example.
 
-* **Select Output POI Folder** - This is the folder that the POI files are saved in and is also what the [Garmin POI Loader](http://www.garmin.com/us/maps/poiloader) uses to load the POIs onto their devices.
-* **Output Format** - Currently ***GPX*** and ***Garmin CSV*** formats are supported.
+* **Select output POI folder** - This is the folder that the POI files are saved in and is also what the [Garmin POI Loader](http://www.garmin.com/us/maps/poiloader) uses to load the POIs onto their devices.
+* **Output format** - Currently ***GPX*** and ***Garmin CSV*** formats are supported.
     * **GPX** - This is a universal format that should work with a number of devices. You can also use this format to import points into [Garmin BaseCamp](http://www.garmin.com/en-US/shop/downloads/basecamp).
     * **Garmin CSV** - This creates a POI CSV file where each line is formatted as:
 
@@ -24,21 +24,25 @@ In this example we are using the [Natural Earth Parks and Protected Lands Data](
             -74.2397354809,40.7858747417,"Thomas Edison NHP","National Historical Park"  
             -75.4446508454,40.0989444031,"Valley Forge NHP","National Historical Park"
 
-* **Input Vector Layer** - All the point vector layers in the QGIS project will be listed here.
+* **Input vector layer** - All the point vector layers in the QGIS project will be listed here.
 
-* **Select Category Column (Optional)** - Category names become the POI file names. When a column is used as the category name, the POIs are organized into multiple files based on the names specified in this column. If **[Use Default Category]** is used, then the file name will become the string from **Default Category Name**.
+* **Select category column (Optional)** - Category names become the POI file names. When a column is used as the category name, the POIs are organized into multiple files based on the names specified in this column. If **[Use default category]** is used, then the file name will become the string from **Default category name**.
 
-* **Default Category Name (This will become the file name)** - When **Select Category Column** is set to **[Use Default Category]**, then the file name will become the string from this text field.
+* **Default category name (This will become the file name)** - When **Select category column** is set to **[Use default category]**, then the file name will become the string from this text field.
 
-* **Select Column to be use as the POI Name** - If there is a column that represents the name of the POI, then select it here; otherwise, every POI will get the **Default POI Name**. This will be the **Title** or **Name** that is displayed next to the POI marker on the map.
+* **Select column to be use as the POI name** - If there is a column that represents the name of the POI, then select it here; otherwise, every POI will get the **Default POI name**. This will be the **Title** or **Name** that is displayed next to the POI marker on the map.
 
-* **Default POI Name** - This specifies a default POI name if a POI Name column is not specified.
+* **Default POI name** - This specifies a default POI name if a POI Name column is not specified.
 
 * **Optional random  color hash visualization column** - This specifies a column that has unique values in which a random color hash will be created for each unique value in the column. Not all devices support the color field, but for those that do this will color the marker into unique color categories.
 
-* **Optional Description Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
+* **Optional comment column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
 
-* **Optional Comment Column** - This is optional and some devices may not use it, but it is supported by **Garmin** devices.
+* **Optional description column** - This is optional and some devices may not use it.
+
+* **Optional URL column** - This selects a URL to be used as a web link.
+
+* **Optional symbol column** - This specifies the name of a symbol for this point. Look up Garmin symbol names to get a list of possible symbols.
 
 By clicking on the ***Export*** button, one or more **GPX** or **CSV** files will be created. This shows the GPX files created with using the Parks Natural Earth data set and specifying ***nps_region*** as the category column. 
 
