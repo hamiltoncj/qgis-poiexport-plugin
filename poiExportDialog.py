@@ -42,17 +42,17 @@ class POIExportDialog(QDialog, FORM_CLASS):
         self.setupUi(self)
         self.iface = iface
         self.canvas = iface.mapCanvas()
-        self.buttonBox.button(QDialogButtonBox.Ok).setText("Export")
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setText("Export")
         self.outputFormatComboBox.addItems(['GPX', 'Garmin CSV'])
         
         self.fileButton.clicked.connect(self.getDirPath)
         self.vectorComboBox.layerChanged.connect(self.initLayerFields)
-        self.vectorComboBox.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.vectorComboBox.setFilters(QgsMapLayerProxyModel.Filter.PointLayer)
         self.categoryComboBox.activated.connect(self.setEnabled)
         self.visualComboBox.activated.connect(self.setEnabled)
         self.poiNameComboBox.activated.connect(self.setEnabled)
         self.epsg4326 = QgsCoordinateReferenceSystem("EPSG:4326")
-        self.buttonBox.button(QDialogButtonBox.Help).clicked.connect(self.help)
+        self.buttonBox.button(QDialogButtonBox.StandardButton.Help).clicked.connect(self.help)
 
     def help(self):
         url = QUrl.fromLocalFile(os.path.dirname(__file__) + "/index.html").toString()
@@ -62,7 +62,7 @@ class POIExportDialog(QDialog, FORM_CLASS):
     def accept(self):
         """Called when the OK button has been pressed."""
         if self.vectorComboBox.count() == 0:
-            self.iface.messageBar().pushMessage("", "No point vector layers are available", level=Qgis.Warning, duration=3)
+            self.iface.messageBar().pushMessage("", "No point vector layers are available", level=Qgis.MessageLevel.Warning, duration=3)
             return
         # Read and get the state of all of the POI widgets
         base = self.fileLineEdit.text()

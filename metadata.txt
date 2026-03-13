@@ -1,8 +1,9 @@
 [general]
 name=POI Exporter
 qgisMinimumVersion=3.0
+qgisMaximumVersion=4.99
 description=Export CSV or GPX Points of Interest (POI)
-version=3.0.5
+version=3.0.6
 author=Calvin Hamilton
 email=adenaculture@gmail.com
 about=This plugin creates Points of Interest (POI) from a vector points layer. It supports Garmin CSV and GPX output formats. It allows the user to select a category column to be used to create separate files containing points from that category. The user can also select columns to be used for the POI name and description. The plugin can be found in "Vector->GPS->POI Exporter"
@@ -15,6 +16,7 @@ icon=icon.png
 experimental=False
 deprecated=False
 changelog=
+    3.0.6 - Qt5/Qt6 compatibility
     3.0.5 - Update metadata
     3.0.4 - Added link and sym attributes
     3.0.3 - Added a color hash field
